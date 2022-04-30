@@ -3,7 +3,6 @@
   package:
     name: ['postfix', 'sasl2-bin', 'libsasl2-modules']
     state: present
-    install_recommends: false
 
 - name: "Configure main.cf"
   template:
