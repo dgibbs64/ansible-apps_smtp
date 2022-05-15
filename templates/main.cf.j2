@@ -3,11 +3,12 @@
 smtpd_banner = $myhostname ESMTP mailjet relay
 
 # Generic debian postfix configuration
+mydomain = {{ postfix_mydomain }}
 myorigin = {{ postfix_myorigin }}
 myhostname = {{ ansible_fqdn }}
 mynetworks = {{ smtpd_mynetworks }}
 biff = no
-append_dot_mydomain = no
+append_dot_mydomain = yes
 readme_directory = no
 compatibility_level = 2
 inet_interfaces = loopback-only
