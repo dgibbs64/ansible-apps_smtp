@@ -1,7 +1,7 @@
 ---
 - name: "Install postfix packages"
   package:
-    name: ["postfix", "sasl2-bin", "libsasl2-modules"]
+    name: ["postfix"]
     state: present
 
 - name: "Install sasl packages (Debian Family)"
@@ -12,7 +12,7 @@
 
 - name: "Install sasl packages (RedHat Family)"
   package:
-    name: cyrus-sasl
+    name: ["cyrus-sasl", "cyrus-sasl-plain", "cyrus-sasl-lib"]
     state: present
   when: ansible_os_family == "RedHat"
 
@@ -48,7 +48,7 @@
     - postmap sasl_passwd
     - reload postfix
 
-- name: "Configure sasl module"
+- name: "Configure sasl module (Debian Family)"
   template:
     src: smtpd.conf.j2
     dest: /etc/postfix/sasl/smtpd.conf
@@ -57,6 +57,18 @@
     mode: 0444
     backup: true
   notify: restart postfix
+  when: ansible_os_family == "Debian"
+
+- name: "Configure sasl module (RedHat Family)"
+  template:
+    src: smtpd.conf.j2
+    dest: /etc/sasl2/smtpd.conf
+    owner: root
+    group: root
+    mode: 0444
+    backup: true
+  notify: restart postfix
+  when: ansible_os_family == "RedHat"
 
 - name: "Configure relay user"
   command: saslpasswd2 -c -p -f {{ sasldb2_file }} {{ sasldb2_username | quote }}
