@@ -4,6 +4,18 @@
     name: ["postfix", "sasl2-bin", "libsasl2-modules"]
     state: present
 
+- name: "Install sasl packages (Debian Family)"
+  package:
+    name: ["sasl2-bin", "libsasl2-modules"]
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: "Install sasl packages (RedHat Family)"
+  package:
+    name: cyrus-sasl
+    state: present
+  when: ansible_os_family == "RedHat"
+
 - name: "Configure main.cf"
   template:
     src: main.cf.j2
@@ -114,7 +126,7 @@
   register: saslauthddir
 
 - name: "Create saslauthd socket dir"
-  command: dpkg-statoverride --add root sasl 710 /var/spool/postfix/var/run/saslauthd
+  command: dpkg-statoverride --force-all --add root sasl 710 /var/spool/postfix/var/run/saslauthd
   args:
     creates: /var/spool/postfix/var/run/saslauthd
     warn: false
