@@ -1,13 +1,23 @@
 ---
 - name: "Install postfix packages"
   package:
-    name: ['postfix', 'sasl2-bin', 'libsasl2-modules']
+    name: ["postfix", "sasl2-bin", "libsasl2-modules"]
     state: present
 
 - name: "Configure main.cf"
   template:
     src: main.cf.j2
     dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: 0444
+    backup: true
+  notify: restart postfix
+
+- name: "Configure mailutils.conf"
+  template:
+    src: mailutils.conf.j2
+    dest: /etc/mailutils.conf
     owner: root
     group: root
     mode: 0444
@@ -73,8 +83,8 @@
 - name: "Change saslauthd mechanism"
   lineinfile:
     path: /etc/default/saslauthd
-    regexp: '^MECHANISMS=.*$'
-    line: 'MECHANISMS=ldap'
+    regexp: "^MECHANISMS=.*$"
+    line: "MECHANISMS=ldap"
     backup: true
   notify: restart saslauthd
   when: saslauthd_enable
@@ -82,7 +92,7 @@
 - name: "Change saslauthd mechanism options"
   lineinfile:
     path: /etc/default/saslauthd
-    regexp: '^MECH_OPTIONS=.*$'
+    regexp: "^MECH_OPTIONS=.*$"
     line: 'MECH_OPTIONS="/etc/saslauthd.conf"'
     backup: true
   notify: restart saslauthd
@@ -91,18 +101,18 @@
 - name: "Change saslauthd socket"
   lineinfile:
     path: /etc/default/saslauthd
-    regexp: '^(OPTIONS=.*)-m /var/run/saslauthd(.*)$'
+    regexp: "^(OPTIONS=.*)-m /var/run/saslauthd(.*)$"
     backrefs: true
     line: '\1-m /var/spool/postfix/var/run/saslauthd\2'
     backup: true
   notify: restart saslauthd
   when: saslauthd_enable
-  
+
 - name: "Check if saslauthd socket dir exists"
   stat:
     path: /var/spool/postfix/var/run/saslauthd
   register: saslauthddir
-  
+
 - name: "Create saslauthd socket dir"
   command: dpkg-statoverride --add root sasl 710 /var/spool/postfix/var/run/saslauthd
   args:

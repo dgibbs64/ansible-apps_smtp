@@ -15,10 +15,11 @@ saslauthd_ldap_url: ""
 saslauthd_ldap_userdn: ""
 # saslauthd_ldap_binduser: ""
 # saslauthd_ldap_bindpassword: ""
-smtpd_tls_cert_file: ''
-smtpd_tls_key_file: ''
+smtpd_tls_cert_file: ""
+smtpd_tls_key_file: ""
 
 smtpd_relay_restrictions: "permit_sasl_authenticated reject_unauth_destination"
 smtpd_mynetworks: "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"
 
-postfix_myorigin: ""
+postfix_mydomain: ""
+postfix_myorigin: "$mydomain"
