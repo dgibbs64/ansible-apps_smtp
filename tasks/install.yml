@@ -102,8 +102,8 @@
     line: "START=yes"
     backup: true
   notify: restart saslauthd
-  when: saslauthd_enable
-
+  when: saslauthd_enable and ansible_os_family == "RedHat"
+  
 - name: "Change saslauthd mechanism"
   lineinfile:
     path: /etc/default/saslauthd
